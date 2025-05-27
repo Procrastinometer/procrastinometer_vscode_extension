@@ -1,0 +1,1 @@
+export const INACTIVITY_LIMIT_MS: number = Number(process.env.INACTIVITY_LIMIT_MS);

@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "procrastinometer.helloWorld",
-        "title": "Hello World"
+        "command": "procrastinometer.startTracking",
+        "title": "Start tracking"
       }
     ]
   },
@@ -38,5 +38,8 @@
     "eslint": "^9.25.1",
     "prettier": "3.5.3",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0"
   }
 }
