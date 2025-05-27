@@ -17,9 +17,11 @@ export class VSCodeUiManager implements UIManager {
   }
 
   private formatTime(ms: number): string {
-    const totalSec = Math.floor(ms / 1000);
-    const min = Math.floor(totalSec / 60);
-    const sec = totalSec % 60;
+    const millisecondsInSecond = 1000;
+    const secondsInMinute = 60;
+    const totalSec = Math.floor(ms / millisecondsInSecond);
+    const min = Math.floor(totalSec / secondsInMinute);
+    const sec = totalSec % secondsInMinute;
     return `${min} m ${sec} s`;
   }
 }
