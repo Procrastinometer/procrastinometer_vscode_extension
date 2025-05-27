@@ -1,4 +1,5 @@
 import { UIManager } from '../ui/interfaces/ui-manager.interface';
+import { Storage } from '../storage/interfaces/storage.interface';
 
 export class Tracker {
   private readonly inactivityLimit: number;
@@ -6,10 +7,12 @@ export class Tracker {
   private activationStartTime: number = 0;
   private inactivityTimeout: NodeJS.Timeout | null = null; // mb implement own timeout class
   private uiManager: UIManager;
+  private storage: Storage;
 
-  constructor(inactivityLimit: number, uiManager: UIManager) {
+  constructor(inactivityLimit: number, uiManager: UIManager, storage: Storage) {
     this.inactivityLimit = inactivityLimit;
     this.uiManager = uiManager;
+    this.storage = storage;
   }
 
   startTracking(): void {
@@ -20,19 +23,33 @@ export class Tracker {
       clearTimeout(this.inactivityTimeout);
     }
     this.inactivityTimeout = setTimeout(
-      this.onInterval.bind(this),
+      this.onTimeout.bind(this),
       this.inactivityLimit
     );
   }
 
-  private onInterval(): void {
-    this.countTotalTime();
-    this.resetActivationStartTime();
-    this.uiManager.setTrackingTime(this.totalTime);
+  private async onTimeout(): Promise<void> {
+    try {
+      const endTime = Date.now();
+      const duration = this.calculateDuration(endTime);
+      await this.storage.saveTimeLog(
+        this.activationStartTime,
+        duration,
+        endTime
+      );
+      this.updateTotalTime(duration);
+      this.resetActivationStartTime();
+      this.uiManager.setTrackingTime(this.totalTime);
+    } catch (err) {
+      // TODO add logger
+    }
   }
 
-  private countTotalTime(): void {
-    const duration = Date.now() - this.activationStartTime;
+  private calculateDuration(endTime: number): number {
+    return endTime - this.activationStartTime;
+  }
+
+  private updateTotalTime(duration: number): void {
     this.totalTime += duration;
   }
 
