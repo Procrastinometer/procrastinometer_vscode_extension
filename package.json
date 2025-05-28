@@ -9,13 +9,13 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "procrastinometer.startTracking",
-        "title": "Start tracking"
+        "command": "procrastinometer.test",
+        "title": "Test command"
       }
     ]
   },
