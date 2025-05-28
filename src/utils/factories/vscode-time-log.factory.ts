@@ -6,7 +6,7 @@ import {
   BLANK_FILE_NAME,
   BLANK_PROGRAMMING_LANGUAGE,
   BLANK_PROJECT_NAME,
-} from '../../constance/constance';
+} from '../../constance/blank-constance';
 
 export class VSCodeTimeLogFactory implements TimeLogFactory {
   private readonly vscode: typeof vscode;
