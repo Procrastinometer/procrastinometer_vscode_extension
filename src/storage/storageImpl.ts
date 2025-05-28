@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { TimeLogFactory } from '../utils/factories/interfaces/time-log.factory.interface';
 import { TimeLog } from '../models/time-log';
 
-export class VSCodeStorage implements Storage {
+export class StorageImpl implements Storage {
   private readonly filePath: string;
   private readonly timeLogFactory: TimeLogFactory;
 
