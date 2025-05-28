@@ -7,10 +7,12 @@ import { VSCodeUiManager } from './ui/vscode-ui-manager';
 import { Tracker } from './tracker/tracker';
 import { INACTIVITY_LIMIT_MS } from './config/config';
 import { VSCodeStorage } from './storage/vscode-storage';
+import { VSCodeTimeLogFactory } from './utils/factories/vscode-time-log.factory';
 
 export async function activate(context: vscode.ExtensionContext) {
   const uiManager = new VSCodeUiManager(vscode.window);
-  const storage = new VSCodeStorage(vscode, context.globalStorageUri.fsPath);
+  const timeLogFactory = new VSCodeTimeLogFactory(vscode);
+  const storage = new VSCodeStorage(context.globalStorageUri.fsPath, timeLogFactory);
   await storage.init();
   const tracker = new Tracker(INACTIVITY_LIMIT_MS, uiManager, storage);
 

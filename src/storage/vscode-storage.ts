@@ -1,22 +1,16 @@
 import { Storage } from './interfaces/storage.interface';
-import { TimeLog } from './timeLog';
-import * as vscode from 'vscode';
 import * as fs from 'fs/promises';
 import * as path from 'node:path';
-import * as os from 'node:os';
-import {
-  BLANK_FILE_NAME,
-  BLANK_PROGRAMMING_LANGUAGE,
-  BLANK_PROJECT_NAME,
-} from '../constance/constance';
+import { TimeLogFactory } from '../utils/factories/interfaces/time-log.factory.interface';
+import { TimeLog } from '../models/time-log';
 
 export class VSCodeStorage implements Storage {
-  private readonly vscode: typeof vscode;
   private readonly filePath: string;
+  private readonly timeLogFactory: TimeLogFactory;
 
-  constructor(vscodeWindowAPI: typeof vscode, filePath: string) {
-    this.vscode = vscodeWindowAPI;
+  constructor(filePath: string, timeLogFactory: TimeLogFactory) {
     this.filePath = path.join(filePath, 'activity-log.json');
+    this.timeLogFactory = timeLogFactory;
   }
 
   async init() {
@@ -28,20 +22,7 @@ export class VSCodeStorage implements Storage {
     duration: number,
     endTime: number
   ): Promise<void> {
-    const timeLogItem = TimeLog.create({
-      duration,
-      startTime: new Date(startTime).toISOString(),
-      endTime: new Date(endTime).toISOString(),
-      codeEditor: this.vscode.env.appName,
-      osName: os.type(),
-      projectName: this.vscode.workspace.name || BLANK_PROJECT_NAME,
-      fileName:
-        this.vscode.window.activeTextEditor?.document.uri.fsPath ||
-        BLANK_FILE_NAME,
-      programmingLanguage:
-        this.vscode.window.activeTextEditor?.document.languageId ||
-        BLANK_PROGRAMMING_LANGUAGE,
-    });
+    const timeLogItem = this.timeLogFactory.createTimeLog(startTime, duration, endTime);
     await fs.appendFile(
       this.filePath,
       JSON.stringify(timeLogItem) + '\n',
