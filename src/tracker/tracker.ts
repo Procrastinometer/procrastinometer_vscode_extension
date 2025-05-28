@@ -28,8 +28,19 @@ export class Tracker {
     );
   }
 
+  async stopTracking(): Promise<void> {
+    if (this.inactivityTimeout) {
+      clearTimeout(this.inactivityTimeout);
+    }
+    this.inactivityTimeout = null;
+    await this.onTimeout();
+  }
+
   private async onTimeout(): Promise<void> {
     try {
+      if (!this.activationStartTime) {
+        return;
+      }
       const endTime = Date.now();
       const duration = this.calculateDuration(endTime);
       await this.storage.saveTimeLog(

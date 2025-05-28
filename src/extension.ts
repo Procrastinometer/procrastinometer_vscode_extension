@@ -9,6 +9,10 @@ import { INACTIVITY_LIMIT_MS } from './config/config';
 import { StorageImpl } from './storage/storageImpl';
 import { VSCodeTimeLogFactory } from './utils/factories/vscode-time-log.factory';
 import { TEST_COMMAND } from './constance/command-constance';
+import { ActivitySynchronizer } from './synchronizer/activitySynchronizer';
+
+let tracker: Tracker;
+let activitySynchronizer: ActivitySynchronizer;
 
 export async function activate(context: vscode.ExtensionContext) {
   const uiManager = new VSCodeUiManager(vscode.window);
@@ -18,7 +22,8 @@ export async function activate(context: vscode.ExtensionContext) {
     timeLogFactory
   );
   await storage.init();
-  const tracker = new Tracker(INACTIVITY_LIMIT_MS, uiManager, storage);
+  tracker = new Tracker(INACTIVITY_LIMIT_MS, uiManager, storage);
+  activitySynchronizer = new ActivitySynchronizer('abc123', storage);
 
   subscribeOnAllActivityEvents(context, tracker);
 
@@ -29,8 +34,10 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 }
 
-export function deactivate() {
-  // TODO add stop tracking and sync with server
+export async function deactivate() {
+  await tracker.stopTracking();
+  activitySynchronizer.stop();
+  await activitySynchronizer.syncActivity();
 }
 
 const subscribeOnAllActivityEvents = (context: vscode.ExtensionContext, tracker: Tracker) => {
