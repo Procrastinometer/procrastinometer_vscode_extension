@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "procrastinometer.startTracking",
-        "title": "Start tracking"
+        "command": "procrastinometer.test",
+        "title": "Test command"
       }
     ]
   },
