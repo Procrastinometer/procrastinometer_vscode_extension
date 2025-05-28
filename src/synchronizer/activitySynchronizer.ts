@@ -43,7 +43,7 @@ export class ActivitySynchronizer {
     }
   }
 
-  private async sendLogsToServer(timeLogs: TimeLog[]): Promise<Response> {
+  private sendLogsToServer(timeLogs: TimeLog[]): Promise<Response> {
     return fetch(`${BACK_BASE_URL}/saveLogs`, { // TODO change /saveLogs -> to real back url
       method: 'POST',
       headers: {
