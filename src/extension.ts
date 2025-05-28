@@ -2,16 +2,20 @@ import * as path from 'node:path';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
-
 import * as vscode from 'vscode';
 import { VSCodeUiManager } from './ui/vscode-ui-manager';
 import { Tracker } from './tracker/tracker';
 import { INACTIVITY_LIMIT_MS } from './config/config';
+import { StorageImpl } from './storage/storageImpl';
+import { VSCodeTimeLogFactory } from './utils/factories/vscode-time-log.factory';
 
-const uiManager = new VSCodeUiManager(vscode.window);
-const tracker = new Tracker(INACTIVITY_LIMIT_MS, uiManager);
+export async function activate(context: vscode.ExtensionContext) {
+  const uiManager = new VSCodeUiManager(vscode.window);
+  const timeLogFactory = new VSCodeTimeLogFactory(vscode);
+  const storage = new StorageImpl(context.globalStorageUri.fsPath, timeLogFactory);
+  await storage.init();
+  const tracker = new Tracker(INACTIVITY_LIMIT_MS, uiManager, storage);
 
-export function activate(context: vscode.ExtensionContext) {
   console.log('Started');
 
   context.subscriptions.push(
@@ -31,11 +35,12 @@ export function activate(context: vscode.ExtensionContext) {
     'procrastinometer.startTracking',
     () => {
       vscode.window.showInformationMessage(`Extension is started!`);
-    },
+    }
   );
 
   context.subscriptions.push(disposable);
 }
 
 export function deactivate() {
+  // TODO add stop tracking and sync with server
 }
