@@ -32,10 +32,13 @@ export class StorageImpl implements Storage {
 
   async getTimeLogs(): Promise<TimeLog[]> {
     const timeLogsData = await fs.readFile(this.filePath, 'utf8');
-    return timeLogsData.split('\n').map((item) => JSON.parse(item));
+    return timeLogsData
+      .split('\n')
+      .filter((item) => !!item)
+      .map((item) => JSON.parse(item));
   }
 
   async clearFile(): Promise<void> {
-    await fs.truncate(this.filePath);
+    return fs.truncate(this.filePath);
   }
 }

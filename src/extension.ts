@@ -5,10 +5,14 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 import * as vscode from 'vscode';
 import { VSCodeUiManager } from './ui/vscode-ui-manager';
 import { Tracker } from './tracker/tracker';
-import { INACTIVITY_LIMIT_MS } from './config/config';
+import { DATA_SYNCHRONISATION_INTERVAL, INACTIVITY_LIMIT_MS } from './config/config';
 import { StorageImpl } from './storage/storageImpl';
 import { VSCodeTimeLogFactory } from './utils/factories/vscode-time-log.factory';
 import { TEST_COMMAND } from './constance/command-constance';
+import { ActivitySynchronizer } from './synchronizer/activitySynchronizer';
+
+let tracker: Tracker;
+let activitySynchronizer: ActivitySynchronizer;
 
 export async function activate(context: vscode.ExtensionContext) {
   const uiManager = new VSCodeUiManager(vscode.window);
@@ -18,7 +22,9 @@ export async function activate(context: vscode.ExtensionContext) {
     timeLogFactory
   );
   await storage.init();
-  const tracker = new Tracker(INACTIVITY_LIMIT_MS, uiManager, storage);
+  tracker = new Tracker(INACTIVITY_LIMIT_MS, uiManager, storage);
+  activitySynchronizer = new ActivitySynchronizer('abc123', storage);
+  activitySynchronizer.init(DATA_SYNCHRONISATION_INTERVAL);
 
   subscribeOnAllActivityEvents(context, tracker);
 
@@ -29,8 +35,10 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 }
 
-export function deactivate() {
-  // TODO add stop tracking and sync with server
+export async function deactivate() {
+  await tracker.stopTracking();
+  activitySynchronizer.stop();
+  await activitySynchronizer.syncActivity();
 }
 
 const subscribeOnAllActivityEvents = (context: vscode.ExtensionContext, tracker: Tracker) => {
