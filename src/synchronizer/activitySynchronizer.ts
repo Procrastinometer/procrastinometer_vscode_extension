@@ -1,20 +1,15 @@
 import { Storage } from '../storage/interfaces/storage.interface';
-import { BACK_BASE_URL } from '../config/config';
-import { TimeLog } from '../models/time-log';
 import { clearInterval } from 'node:timers';
+import { ApiClient } from '../apiClient/interfaces/api-client.interface';
 
 export class ActivitySynchronizer {
-  private apiKey: string;
   private syncInterval: NodeJS.Timeout | null = null;
   private readonly storage: Storage;
+  private readonly apiClient: ApiClient;
 
-  constructor(apiKey: string, storage: Storage) {
-    this.apiKey = apiKey;
+  constructor(storage: Storage, apiClient: ApiClient) {
     this.storage = storage;
-  }
-
-  setApiKey(apiKey: string): void {
-    this.apiKey = apiKey;
+    this.apiClient = apiClient;
   }
 
   init(syncInterval: number) {
@@ -31,26 +26,14 @@ export class ActivitySynchronizer {
   async syncActivity(): Promise<void> {
     try {
       const timeLogs = await this.storage.getTimeLogs();
-      const response = await this.sendLogsToServer(timeLogs);
-      if (!response.ok) {
-        const data = await response.json();
-        // TODO add logger
+      if (timeLogs.length === 0) {
         return;
       }
+      await this.apiClient.sendLogsToServer(timeLogs);
       await this.storage.clearFile();
     } catch (err) {
+      console.log(err);
       // TODO add logger
     }
-  }
-
-  private sendLogsToServer(timeLogs: TimeLog[]): Promise<Response> {
-    return fetch(`${BACK_BASE_URL}/saveLogs`, { // TODO change /saveLogs -> to real back url
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Api-Key': this.apiKey,
-      },
-      body: JSON.stringify(timeLogs),
-    });
   }
 }
