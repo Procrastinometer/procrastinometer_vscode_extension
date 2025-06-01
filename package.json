@@ -24,6 +24,10 @@
       {
         "command": "procrastinometer.stopTracking",
         "title": "Procrastinometer: Stop time tracking"
+      },
+      {
+        "command": "procrastinometer.openDashboard",
+        "title": "Procrastinometer: Open dashboard"
       }
     ]
   },

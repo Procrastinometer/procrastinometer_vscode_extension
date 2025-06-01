@@ -7,7 +7,7 @@ import { VSCodeUiManager } from '../ui/vscode-ui-manager';
 import { VSCodeTimeLogFactory } from '../utils/factories/vscode-time-log.factory';
 import { ApiClientImpl } from '../apiClient/api-clientImpl';
 import { StorageImpl } from '../storage/storageImpl';
-import { DATA_SYNCHRONISATION_INTERVAL, INACTIVITY_LIMIT_MS } from '../config/config';
+import {DATA_SYNCHRONISATION_INTERVAL, FRONT_BASE_URL, INACTIVITY_LIMIT_MS} from '../config/config';
 import { AppFacade } from './interfaces/app-facade.interfaces';
 import { ALREADY_STARTED, INTERNAL_ERROR, INVALID_API_KEY, NO_API_KEY_PROVIDED } from '../constance/error-constance';
 import { ActivitySynchronizer } from '../synchronizer/interfaces/activity-synchronizer.interface';
@@ -29,7 +29,7 @@ export class AppFacadeImpl implements AppFacade {
   constructor(vscodeAPI: typeof vscode, context: vscode.ExtensionContext) {
     const timeLogFactory = new VSCodeTimeLogFactory(vscode);
 
-    this.uiManager = new VSCodeUiManager(vscode.window);
+    this.uiManager = new VSCodeUiManager(vscode);
     this.apiClient = new ApiClientImpl();
     this.storage = new StorageImpl(context.globalStorageUri.fsPath, timeLogFactory);
     this.tracker = new Tracker(INACTIVITY_LIMIT_MS, this.uiManager, this.storage);
@@ -130,6 +130,10 @@ export class AppFacadeImpl implements AppFacade {
       this.uiManager.showMessage(INTERNAL_ERROR);
       // TODO logger
     }
+  }
+
+  openDashboard(): void {
+    this.uiManager.openUrl(`${FRONT_BASE_URL}/dashboard`); // TODO <- change this url
   }
 
   private async setupAndStartTracking(): Promise<void> {

@@ -1,16 +1,21 @@
 import { UIManager } from './interfaces/ui-manager.interface';
 import * as vscode from 'vscode';
 import { API_KEY_LENGTH_ERROR } from '../constance/error-constance';
+import { OPEN_DASHBOARD } from '../constance/command-constance';
+import { STATUS_BAR_INFO } from '../constance/info.constance';
 
 export class VSCodeUiManager implements UIManager {
-  private readonly window: typeof vscode.window;
+  private readonly vscode: typeof vscode;
+  private readonly statusBarItem: vscode.StatusBarItem;
 
-  constructor(vscodeWindowAPI: typeof vscode.window) {
-    this.window = vscodeWindowAPI;
+  constructor(vscodeAPI: typeof vscode) {
+    this.vscode = vscodeAPI;
+    this.statusBarItem = this.vscode.window.createStatusBarItem();
+    this.setupStatusBarItem();
   }
 
   setStatusBarMessage(message: string): void {
-    this.window.setStatusBarMessage(message);
+    this.statusBarItem.text = message;
   }
 
   setTrackingTime(time: number): void {
@@ -26,7 +31,7 @@ export class VSCodeUiManager implements UIManager {
   }
 
   promptApiKey(): Thenable<string | undefined> {
-    return this.window.showInputBox({
+    return this.vscode.window.showInputBox({
       prompt: 'Your API key',
       placeHolder: 'Enter API key',
       validateInput: (value: string) =>
@@ -35,7 +40,17 @@ export class VSCodeUiManager implements UIManager {
   }
 
   showMessage(message: string): void {
-    this.window.showInformationMessage(message);
+    this.vscode.window.showInformationMessage(message);
+  }
+
+  openUrl(url: string): void {
+    this.vscode.env.openExternal(vscode.Uri.parse(url));
+  }
+
+  private setupStatusBarItem(): void {
+    this.statusBarItem.command = OPEN_DASHBOARD;
+    this.statusBarItem.tooltip = STATUS_BAR_INFO;
+    this.statusBarItem.show();
   }
 
   private formatTime(ms: number): string {

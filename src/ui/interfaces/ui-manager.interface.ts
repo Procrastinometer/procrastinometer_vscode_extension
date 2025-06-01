@@ -5,4 +5,5 @@ export interface UIManager {
   setStartBarMessage(): void;
   promptApiKey(): Thenable<string | undefined>;
   showMessage(message: string): void;
+  openUrl(url: string): void;
 }
