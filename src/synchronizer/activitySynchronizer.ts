@@ -1,8 +1,9 @@
 import { Storage } from '../storage/interfaces/storage.interface';
 import { clearInterval } from 'node:timers';
 import { ApiClient } from '../apiClient/interfaces/api-client.interface';
+import { ActivitySynchronizer } from './interfaces/activity-synchronizer.interface';
 
-export class ActivitySynchronizer {
+export class ActivitySynchronizerImpl implements ActivitySynchronizer {
   private syncInterval: NodeJS.Timeout | null = null;
   private readonly storage: Storage;
   private readonly apiClient: ApiClient;
@@ -12,7 +13,7 @@ export class ActivitySynchronizer {
     this.apiClient = apiClient;
   }
 
-  init(syncInterval: number) {
+  init(syncInterval: number): void {
     this.syncInterval = setInterval(this.syncActivity.bind(this), syncInterval);
   }
 
@@ -31,6 +32,7 @@ export class ActivitySynchronizer {
       }
       await this.apiClient.sendLogsToServer(timeLogs);
       await this.storage.clearFile();
+      // fetch total time and update tracker
     } catch (err) {
       console.log(err);
       // TODO add logger
