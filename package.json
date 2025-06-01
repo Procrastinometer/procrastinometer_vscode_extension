@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "procrastinometer.test",
-        "title": "Test command"
+        "command": "procrastinometer.setApiKey",
+        "title": "Procrastinometer: Set API key"
       }
     ]
   },

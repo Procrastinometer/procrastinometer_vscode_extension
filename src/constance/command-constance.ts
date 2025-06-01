@@ -1,1 +1,1 @@
-export const TEST_COMMAND = 'procrastinometer.test';
+export const SET_API_KEY = 'procrastinometer.setApiKey';
