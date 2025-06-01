@@ -17,6 +17,14 @@ export class VSCodeUiManager implements UIManager {
     this.setStatusBarMessage(`⏱ Active time: ${this.formatTime(time)}`);
   }
 
+  setPauseBarMessage(): void {
+    this.setStatusBarMessage('⏱ Extension is paused');
+  }
+
+  setStartBarMessage(): void {
+    this.setStatusBarMessage('⏱ Extension is ready');
+  }
+
   promptApiKey(): Thenable<string | undefined> {
     return this.window.showInputBox({
       prompt: 'Your API key',

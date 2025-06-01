@@ -9,7 +9,7 @@ import { ApiClientImpl } from '../apiClient/api-clientImpl';
 import { StorageImpl } from '../storage/storageImpl';
 import { DATA_SYNCHRONISATION_INTERVAL, INACTIVITY_LIMIT_MS } from '../config/config';
 import { AppFacade } from './interfaces/app-facade.interfaces';
-import { INTERNAL_ERROR, INVALID_API_KEY, NO_API_KEY_PROVIDED } from '../constance/error-constance';
+import { ALREADY_STARTED, INTERNAL_ERROR, INVALID_API_KEY, NO_API_KEY_PROVIDED } from '../constance/error-constance';
 import { ActivitySynchronizer } from '../synchronizer/interfaces/activity-synchronizer.interface';
 import { ActivitySynchronizerImpl } from '../synchronizer/activitySynchronizerImpl';
 import { API_KEY_ADDED } from '../constance/success-constance';
@@ -72,6 +72,10 @@ export class AppFacadeImpl implements AppFacade {
         this.uiManager.showMessage(NO_API_KEY_PROVIDED);
         return;
       }
+      if (this.disposables.length !== 0) {
+        this.uiManager.showMessage(ALREADY_STARTED);
+        return;
+      }
       this.disposables = [
         this.vscode.workspace.onDidChangeTextDocument(this.tracker.startTracking, this.tracker),
         this.vscode.window.onDidChangeTextEditorSelection(this.tracker.startTracking, this.tracker),
@@ -85,6 +89,7 @@ export class AppFacadeImpl implements AppFacade {
         this.vscode.debug.onDidTerminateDebugSession(this.tracker.startTracking, this.tracker)
       ];
       this.vscodeContext.subscriptions.push(...this.disposables);
+      this.uiManager.setStartBarMessage();
     } catch (err) {
       this.uiManager.showMessage(INTERNAL_ERROR);
       // TODO logger
@@ -101,6 +106,7 @@ export class AppFacadeImpl implements AppFacade {
         disposable.dispose();
       }
       this.disposables = [];
+      this.uiManager.setPauseBarMessage();
     } catch (err) {
       this.uiManager.showMessage(INTERNAL_ERROR);
       // TODO logger

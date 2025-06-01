@@ -16,6 +16,14 @@
       {
         "command": "procrastinometer.setApiKey",
         "title": "Procrastinometer: Set API key"
+      },
+      {
+        "command": "procrastinometer.startTracking",
+        "title": "Procrastinometer: Start time tracking"
+      },
+      {
+        "command": "procrastinometer.stopTracking",
+        "title": "Procrastinometer: Stop time tracking"
       }
     ]
   },
