@@ -31,7 +31,7 @@ export class ActivitySynchronizerImpl implements ActivitySynchronizer {
         return;
       }
       await this.apiClient.sendLogsToServer(timeLogs);
-      await this.storage.clearFile();
+      await this.storage.clearLogs();
       // fetch total time and update tracker
     } catch (err) {
       console.log(err);
