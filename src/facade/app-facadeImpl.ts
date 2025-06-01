@@ -7,12 +7,18 @@ import { VSCodeUiManager } from '../ui/vscode-ui-manager';
 import { VSCodeTimeLogFactory } from '../utils/factories/vscode-time-log.factory';
 import { ApiClientImpl } from '../apiClient/api-clientImpl';
 import { StorageImpl } from '../storage/storageImpl';
-import {DATA_SYNCHRONISATION_INTERVAL, FRONT_BASE_URL, INACTIVITY_LIMIT_MS} from '../config/config';
+import {
+  DATA_SYNCHRONISATION_INTERVAL,
+  FRONT_BASE_URL,
+  INACTIVITY_LIMIT_MS,
+} from '../config/config';
 import { AppFacade } from './interfaces/app-facade.interfaces';
 import { ALREADY_STARTED, INTERNAL_ERROR, INVALID_API_KEY, NO_API_KEY_PROVIDED } from '../constance/error-constance';
 import { ActivitySynchronizer } from '../synchronizer/interfaces/activity-synchronizer.interface';
 import { ActivitySynchronizerImpl } from '../synchronizer/activitySynchronizerImpl';
 import { API_KEY_ADDED } from '../constance/success-constance';
+import { join } from 'node:path';
+import { SETTINGS_FIE_NAME } from '../constance/file-names-constance';
 
 export class AppFacadeImpl implements AppFacade {
   private readonly tracker: Tracker;
@@ -134,6 +140,10 @@ export class AppFacadeImpl implements AppFacade {
 
   openDashboard(): void {
     this.uiManager.openUrl(`${FRONT_BASE_URL}/dashboard`); // TODO <- change this url
+  }
+
+  async openSettings(): Promise<void> {
+    await this.uiManager.openFile(join(this.vscodeContext.globalStorageUri.fsPath, SETTINGS_FIE_NAME));
   }
 
   private async setupAndStartTracking(): Promise<void> {

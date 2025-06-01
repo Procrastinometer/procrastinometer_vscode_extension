@@ -28,6 +28,10 @@
       {
         "command": "procrastinometer.openDashboard",
         "title": "Procrastinometer: Open dashboard"
+      },
+      {
+        "command": "procrastinometer.openSettings",
+        "title": "Procrastinometer: Open settings"
       }
     ]
   },

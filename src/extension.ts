@@ -6,6 +6,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 import * as vscode from 'vscode';
 import {
   OPEN_DASHBOARD,
+  OPEN_SETTINGS,
   SET_API_KEY,
   START_TRACKING,
   STOP_TRACKING,
@@ -32,6 +33,9 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(OPEN_DASHBOARD, () => {
       facade.openDashboard();
     }),
+    vscode.commands.registerCommand(OPEN_SETTINGS, () => {
+      facade.openSettings();
+    })
   );
 }
 

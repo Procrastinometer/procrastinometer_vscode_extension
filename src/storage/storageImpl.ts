@@ -3,6 +3,10 @@ import * as fs from 'fs/promises';
 import * as path from 'node:path';
 import { TimeLogFactory } from '../utils/factories/interfaces/time-log.factory.interface';
 import { TimeLog } from '../models/time-log';
+import {
+  SETTINGS_FIE_NAME,
+  TIME_LOG_FIE_NAME,
+} from '../constance/file-names-constance';
 
 export class StorageImpl implements Storage {
   private readonly logsFilePath: string;
@@ -10,8 +14,8 @@ export class StorageImpl implements Storage {
   private readonly timeLogFactory: TimeLogFactory;
 
   constructor(dirPath: string, timeLogFactory: TimeLogFactory) {
-    this.logsFilePath = path.join(dirPath, 'activity-log.json');
-    this.settingsFilePath = path.join(dirPath, 'settings.json');
+    this.logsFilePath = path.join(dirPath, TIME_LOG_FIE_NAME);
+    this.settingsFilePath = path.join(dirPath, SETTINGS_FIE_NAME);
     this.timeLogFactory = timeLogFactory;
   }
 

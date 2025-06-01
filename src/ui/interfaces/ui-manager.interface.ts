@@ -6,4 +6,5 @@ export interface UIManager {
   promptApiKey(): Thenable<string | undefined>;
   showMessage(message: string): void;
   openUrl(url: string): void;
+  openFile(filePath: string): Promise<void>;
 }

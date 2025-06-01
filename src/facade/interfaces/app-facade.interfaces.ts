@@ -5,4 +5,5 @@ export interface AppFacade {
   stopTracking(): void;
   handleSetApiKey(): Promise<void>;
   openDashboard(): void;
+  openSettings(): Promise<void>;
 }

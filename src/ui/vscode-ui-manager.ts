@@ -47,6 +47,12 @@ export class VSCodeUiManager implements UIManager {
     this.vscode.env.openExternal(vscode.Uri.parse(url));
   }
 
+  async openFile(filePath: string): Promise<void> {
+    const uri = this.vscode.Uri.file(filePath);
+    const document = await this.vscode.workspace.openTextDocument(uri);
+    await this.vscode.window.showTextDocument(document);
+  }
+
   private setupStatusBarItem(): void {
     this.statusBarItem.command = OPEN_DASHBOARD;
     this.statusBarItem.tooltip = STATUS_BAR_INFO;
