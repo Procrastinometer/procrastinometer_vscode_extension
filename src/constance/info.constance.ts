@@ -1,0 +1,1 @@
+export const STATUS_BAR_INFO = 'Open dashboard';

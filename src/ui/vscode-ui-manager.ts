@@ -1,19 +1,62 @@
 import { UIManager } from './interfaces/ui-manager.interface';
 import * as vscode from 'vscode';
+import { API_KEY_LENGTH_ERROR } from '../constance/error-constance';
+import { OPEN_DASHBOARD } from '../constance/command-constance';
+import { STATUS_BAR_INFO } from '../constance/info.constance';
 
 export class VSCodeUiManager implements UIManager {
-  private readonly window: typeof vscode.window;
+  private readonly vscode: typeof vscode;
+  private readonly statusBarItem: vscode.StatusBarItem;
 
-  constructor(vscodeWindowAPI: typeof vscode.window) {
-    this.window = vscodeWindowAPI;
+  constructor(vscodeAPI: typeof vscode) {
+    this.vscode = vscodeAPI;
+    this.statusBarItem = this.vscode.window.createStatusBarItem();
+    this.setupStatusBarItem();
   }
 
   setStatusBarMessage(message: string): void {
-    this.window.setStatusBarMessage(message);
+    this.statusBarItem.text = message;
   }
 
   setTrackingTime(time: number): void {
     this.setStatusBarMessage(`⏱ Active time: ${this.formatTime(time)}`);
+  }
+
+  setPauseBarMessage(): void {
+    this.setStatusBarMessage('⏱ Extension is paused');
+  }
+
+  setStartBarMessage(): void {
+    this.setStatusBarMessage('⏱ Extension is ready');
+  }
+
+  promptApiKey(): Thenable<string | undefined> {
+    return this.vscode.window.showInputBox({
+      prompt: 'Your API key',
+      placeHolder: 'Enter API key',
+      validateInput: (value: string) =>
+        value.length !== 36 ? API_KEY_LENGTH_ERROR : null,
+    });
+  }
+
+  showMessage(message: string): void {
+    this.vscode.window.showInformationMessage(message);
+  }
+
+  openUrl(url: string): void {
+    this.vscode.env.openExternal(vscode.Uri.parse(url));
+  }
+
+  async openFile(filePath: string): Promise<void> {
+    const uri = this.vscode.Uri.file(filePath);
+    const document = await this.vscode.workspace.openTextDocument(uri);
+    await this.vscode.window.showTextDocument(document);
+  }
+
+  private setupStatusBarItem(): void {
+    this.statusBarItem.command = OPEN_DASHBOARD;
+    this.statusBarItem.tooltip = STATUS_BAR_INFO;
+    this.statusBarItem.show();
   }
 
   private formatTime(ms: number): string {

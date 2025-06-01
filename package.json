@@ -14,8 +14,24 @@
   "contributes": {
     "commands": [
       {
-        "command": "procrastinometer.test",
-        "title": "Test command"
+        "command": "procrastinometer.setApiKey",
+        "title": "Procrastinometer: Set API key"
+      },
+      {
+        "command": "procrastinometer.startTracking",
+        "title": "Procrastinometer: Start time tracking"
+      },
+      {
+        "command": "procrastinometer.stopTracking",
+        "title": "Procrastinometer: Stop time tracking"
+      },
+      {
+        "command": "procrastinometer.openDashboard",
+        "title": "Procrastinometer: Open dashboard"
+      },
+      {
+        "command": "procrastinometer.openSettings",
+        "title": "Procrastinometer: Open settings"
       }
     ]
   },
