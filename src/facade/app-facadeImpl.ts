@@ -82,19 +82,7 @@ export class AppFacadeImpl implements AppFacade {
         this.uiManager.showMessage(ALREADY_STARTED);
         return;
       }
-      this.disposables = [
-        this.vscode.workspace.onDidChangeTextDocument(this.tracker.startTracking, this.tracker),
-        this.vscode.window.onDidChangeTextEditorSelection(this.tracker.startTracking, this.tracker),
-        this.vscode.window.onDidChangeActiveTextEditor(this.tracker.startTracking, this.tracker),
-        this.vscode.workspace.onDidSaveTextDocument(this.tracker.startTracking, this.tracker),
-        this.vscode.tasks.onDidStartTask(this.tracker.startTracking, this.tracker),
-        this.vscode.tasks.onDidEndTask(this.tracker.startTracking, this.tracker),
-        this.vscode.debug.onDidChangeActiveDebugSession(this.tracker.startTracking, this.tracker),
-        this.vscode.debug.onDidChangeBreakpoints(this.tracker.startTracking, this.tracker),
-        this.vscode.debug.onDidStartDebugSession(this.tracker.startTracking, this.tracker),
-        this.vscode.debug.onDidTerminateDebugSession(this.tracker.startTracking, this.tracker)
-      ];
-      this.vscodeContext.subscriptions.push(...this.disposables);
+      this.subscribeOnChangeEvents();
       this.uiManager.setStartBarMessage();
     } catch (err) {
       this.uiManager.showMessage(INTERNAL_ERROR);
@@ -144,6 +132,22 @@ export class AppFacadeImpl implements AppFacade {
 
   async openSettings(): Promise<void> {
     await this.uiManager.openFile(join(this.vscodeContext.globalStorageUri.fsPath, SETTINGS_FIE_NAME));
+  }
+
+  private subscribeOnChangeEvents(): void {
+    this.disposables = [
+      this.vscode.workspace.onDidChangeTextDocument(this.tracker.startTracking, this.tracker),
+      this.vscode.window.onDidChangeTextEditorSelection(this.tracker.startTracking, this.tracker),
+      this.vscode.window.onDidChangeActiveTextEditor(this.tracker.startTracking, this.tracker),
+      this.vscode.workspace.onDidSaveTextDocument(this.tracker.startTracking, this.tracker),
+      this.vscode.tasks.onDidStartTask(this.tracker.startTracking, this.tracker),
+      this.vscode.tasks.onDidEndTask(this.tracker.startTracking, this.tracker),
+      this.vscode.debug.onDidChangeActiveDebugSession(this.tracker.startTracking, this.tracker),
+      this.vscode.debug.onDidChangeBreakpoints(this.tracker.startTracking, this.tracker),
+      this.vscode.debug.onDidStartDebugSession(this.tracker.startTracking, this.tracker),
+      this.vscode.debug.onDidTerminateDebugSession(this.tracker.startTracking, this.tracker)
+    ];
+    this.vscodeContext.subscriptions.push(...this.disposables);
   }
 
   private async setupAndStartTracking(): Promise<void> {
