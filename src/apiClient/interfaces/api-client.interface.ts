@@ -5,4 +5,5 @@ export interface ApiClient {
   sendLogsToServer(timeLogs: TimeLog[]): Promise<void>;
   validateApiKey(apiKey: string): Promise<boolean>;
   setApiKey(apiKey: string): void;
+  getApiKey(): string | null;
 }
