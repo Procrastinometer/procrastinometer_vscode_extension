@@ -11,10 +11,6 @@ export class ApiClientImpl implements ApiClient {
     this.apiKey = apiKey;
   }
 
-  getApiKey(): string | null {
-    return this.apiKey;
-  }
-
   async getTotalTime(): Promise<number> {
     const url = `${BACK_BASE_URL}/user/total-time`; // TODO change to <- real url
     const method = 'GET';
