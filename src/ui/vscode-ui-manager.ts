@@ -1,5 +1,6 @@
 import { UIManager } from './interfaces/ui-manager.interface';
 import * as vscode from 'vscode';
+import { API_KEY_LENGTH_ERROR } from '../constance/error-constance';
 
 export class VSCodeUiManager implements UIManager {
   private readonly window: typeof vscode.window;
@@ -14,6 +15,19 @@ export class VSCodeUiManager implements UIManager {
 
   setTrackingTime(time: number): void {
     this.setStatusBarMessage(`⏱ Active time: ${this.formatTime(time)}`);
+  }
+
+  promptApiKey(): Thenable<string | undefined> {
+    return this.window.showInputBox({
+      prompt: 'Your API key',
+      placeHolder: 'Enter API key',
+      validateInput: (value: string) =>
+        value.length !== 36 ? API_KEY_LENGTH_ERROR : null,
+    });
+  }
+
+  showMessage(message: string): void {
+    this.window.showInformationMessage(message);
   }
 
   private formatTime(ms: number): string {
