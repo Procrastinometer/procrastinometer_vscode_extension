@@ -1,18 +1,22 @@
 import { UIManager } from '../ui/interfaces/ui-manager.interface';
 import { Storage } from '../storage/interfaces/storage.interface';
+import { Logger } from '../logger/interfaces/logger.interface';
 
 export class Tracker {
   private readonly inactivityLimit: number;
   private totalTime: number = 0;
   private activationStartTime: number = 0;
   private inactivityTimeout: NodeJS.Timeout | null = null; // mb implement own timeout class
-  private uiManager: UIManager;
-  private storage: Storage;
 
-  constructor(inactivityLimit: number, uiManager: UIManager, storage: Storage) {
+  private readonly uiManager: UIManager;
+  private readonly storage: Storage;
+  private readonly logger: Logger;
+
+  constructor(inactivityLimit: number, uiManager: UIManager, storage: Storage, logger: Logger) {
     this.inactivityLimit = inactivityLimit;
     this.uiManager = uiManager;
     this.storage = storage;
+    this.logger = logger;
   }
 
   setTotalTime(totalTime: number): void {
@@ -56,7 +60,7 @@ export class Tracker {
       this.resetActivationStartTime();
       this.uiManager.setTrackingTime(this.totalTime);
     } catch (err) {
-      // TODO add logger
+      this.logger.logError(err as any);
     }
   }
 

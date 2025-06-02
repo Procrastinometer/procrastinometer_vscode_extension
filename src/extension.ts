@@ -13,11 +13,13 @@ import {
 } from './constance/command-constance';
 import { AppFacade } from './facade/interfaces/app-facade.interfaces';
 import { AppFacadeImpl } from './facade/app-facadeImpl';
+import { LoggerImpl } from './logger/loggerImpl';
 
 let facade: AppFacade;
 
 export async function activate(context: vscode.ExtensionContext) {
-  facade = new AppFacadeImpl(vscode, context);
+  const logger = new LoggerImpl();
+  facade = new AppFacadeImpl(vscode, context, logger);
   await facade.activate();
 
   context.subscriptions.push(
