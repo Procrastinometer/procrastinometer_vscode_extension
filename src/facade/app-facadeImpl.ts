@@ -56,6 +56,8 @@ export class AppFacadeImpl implements AppFacade {
     } catch (err) {
       this.uiManager.showMessage(INTERNAL_ERROR);
       // TODO logger
+    } finally {
+      this.updateTotalTime();
     }
   }
 
@@ -161,7 +163,13 @@ export class AppFacadeImpl implements AppFacade {
 
   private async setupComponents(): Promise<void> {
     await this.storage.init();
-    this.activitySynchronizer.init(DATA_SYNCHRONISATION_INTERVAL);
+    this.activitySynchronizer.init(DATA_SYNCHRONISATION_INTERVAL, this.updateTotalTime.bind(this));
     this.isInitialized = true;
+  }
+
+  private async updateTotalTime(): Promise<void> {
+    const totalTime = await this.apiClient.getTotalTime();
+    this.tracker.setTotalTime(totalTime);
+    this.uiManager.setTrackingTime(totalTime);
   }
 }

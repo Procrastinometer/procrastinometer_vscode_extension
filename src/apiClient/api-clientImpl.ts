@@ -12,7 +12,7 @@ export class ApiClientImpl implements ApiClient {
   }
 
   async getTotalTime(): Promise<number> {
-    const url = `${BACK_BASE_URL}/user/total-time`; // TODO change to <- real url
+    const url = `${BACK_BASE_URL}/time-log/get-total-time`;
     const method = 'GET';
     const response = await this.doRequest(url, method, true);
     if (!response.ok) {

@@ -15,6 +15,10 @@ export class Tracker {
     this.storage = storage;
   }
 
+  setTotalTime(totalTime: number): void {
+    this.totalTime = totalTime;
+  }
+
   startTracking(): void {
     if (!this.activationStartTime) {
       this.activationStartTime = Date.now();

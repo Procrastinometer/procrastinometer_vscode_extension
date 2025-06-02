@@ -13,8 +13,13 @@ export class ActivitySynchronizerImpl implements ActivitySynchronizer {
     this.apiClient = apiClient;
   }
 
-  init(syncInterval: number): void {
-    this.syncInterval = setInterval(this.syncActivity.bind(this), syncInterval);
+  init(syncInterval: number, callback: Function): void {
+    this.syncInterval = setInterval(async () => {
+      await this.syncActivity();
+      if (callback) {
+        callback();
+      }
+    }, syncInterval);
   }
 
   stop(): void {
@@ -32,7 +37,6 @@ export class ActivitySynchronizerImpl implements ActivitySynchronizer {
       }
       await this.apiClient.sendLogsToServer(timeLogs);
       await this.storage.clearLogs();
-      // fetch total time and update tracker
     } catch (err) {
       console.log(err);
       // TODO add logger
