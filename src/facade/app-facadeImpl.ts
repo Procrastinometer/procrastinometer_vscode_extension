@@ -1,4 +1,3 @@
-import { Tracker } from '../tracker/tracker';
 import { Storage } from '../storage/interfaces/storage.interface';
 import { UIManager } from '../ui/interfaces/ui-manager.interface';
 import { ApiClient } from '../apiClient/interfaces/api-client.interface';
@@ -20,6 +19,8 @@ import { API_KEY_ADDED } from '../constance/success-constance';
 import { join } from 'node:path';
 import { SETTINGS_FIE_NAME } from '../constance/file-names-constance';
 import { Logger } from '../logger/interfaces/logger.interface';
+import { Tracker } from '../tracker/interfaces/tracker.interface';
+import { TrackerImpl } from '../tracker/trackerImpl';
 
 export class AppFacadeImpl implements AppFacade {
   private readonly tracker: Tracker;
@@ -40,7 +41,7 @@ export class AppFacadeImpl implements AppFacade {
     this.uiManager = new VSCodeUiManager(vscode);
     this.apiClient = new ApiClientImpl();
     this.storage = new StorageImpl(context.globalStorageUri.fsPath, timeLogFactory);
-    this.tracker = new Tracker(INACTIVITY_LIMIT_MS, this.uiManager, this.storage, logger);
+    this.tracker = new TrackerImpl(INACTIVITY_LIMIT_MS, this.uiManager, this.storage, logger);
     this.activitySynchronizer = new ActivitySynchronizerImpl(this.storage, this.apiClient, logger);
     this.logger = logger;
     this.vscode = vscodeAPI;

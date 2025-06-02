@@ -1,8 +1,9 @@
 import { UIManager } from '../ui/interfaces/ui-manager.interface';
 import { Storage } from '../storage/interfaces/storage.interface';
 import { Logger } from '../logger/interfaces/logger.interface';
+import { Tracker } from './interfaces/tracker.interface';
 
-export class Tracker {
+export class TrackerImpl implements Tracker {
   private readonly inactivityLimit: number;
   private totalTime: number = 0;
   private activationStartTime: number = 0;
@@ -12,7 +13,12 @@ export class Tracker {
   private readonly storage: Storage;
   private readonly logger: Logger;
 
-  constructor(inactivityLimit: number, uiManager: UIManager, storage: Storage, logger: Logger) {
+  constructor(
+    inactivityLimit: number,
+    uiManager: UIManager,
+    storage: Storage,
+    logger: Logger
+  ) {
     this.inactivityLimit = inactivityLimit;
     this.uiManager = uiManager;
     this.storage = storage;
