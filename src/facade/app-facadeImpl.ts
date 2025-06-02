@@ -19,6 +19,7 @@ import { ActivitySynchronizerImpl } from '../synchronizer/activitySynchronizerIm
 import { API_KEY_ADDED } from '../constance/success-constance';
 import { join } from 'node:path';
 import { SETTINGS_FIE_NAME } from '../constance/file-names-constance';
+import { Logger } from '../logger/interfaces/logger.interface';
 
 export class AppFacadeImpl implements AppFacade {
   private readonly tracker: Tracker;
@@ -26,20 +27,22 @@ export class AppFacadeImpl implements AppFacade {
   private readonly uiManager: UIManager;
   private readonly apiClient: ApiClient;
   private readonly activitySynchronizer: ActivitySynchronizer;
+  private readonly logger: Logger;
   private readonly vscode: typeof vscode;
   private readonly vscodeContext: vscode.ExtensionContext;
 
   private isInitialized: boolean = false;
   private disposables: vscode.Disposable[] = [];
 
-  constructor(vscodeAPI: typeof vscode, context: vscode.ExtensionContext) {
+  constructor(vscodeAPI: typeof vscode, context: vscode.ExtensionContext, logger: Logger) {
     const timeLogFactory = new VSCodeTimeLogFactory(vscode);
 
     this.uiManager = new VSCodeUiManager(vscode);
     this.apiClient = new ApiClientImpl();
     this.storage = new StorageImpl(context.globalStorageUri.fsPath, timeLogFactory);
-    this.tracker = new Tracker(INACTIVITY_LIMIT_MS, this.uiManager, this.storage);
-    this.activitySynchronizer = new ActivitySynchronizerImpl(this.storage, this.apiClient);
+    this.tracker = new Tracker(INACTIVITY_LIMIT_MS, this.uiManager, this.storage, logger);
+    this.activitySynchronizer = new ActivitySynchronizerImpl(this.storage, this.apiClient, logger);
+    this.logger = logger;
     this.vscode = vscodeAPI;
     this.vscodeContext = context;
   }
@@ -55,7 +58,7 @@ export class AppFacadeImpl implements AppFacade {
       await this.setupAndStartTracking();
     } catch (err) {
       this.uiManager.showMessage(INTERNAL_ERROR);
-      // TODO logger
+      this.logger.logError(err as any);
     } finally {
       this.updateTotalTime();
     }
@@ -70,7 +73,7 @@ export class AppFacadeImpl implements AppFacade {
       this.isInitialized = false;
     } catch (err) {
       this.uiManager.showMessage(INTERNAL_ERROR);
-      // TODO logger
+      this.logger.logError(err as any);
     }
   }
 
@@ -88,7 +91,7 @@ export class AppFacadeImpl implements AppFacade {
       this.uiManager.setStartBarMessage();
     } catch (err) {
       this.uiManager.showMessage(INTERNAL_ERROR);
-      // TODO logger
+      this.logger.logError(err as any);
     }
   }
 
@@ -105,7 +108,7 @@ export class AppFacadeImpl implements AppFacade {
       this.uiManager.setPauseBarMessage();
     } catch (err) {
       this.uiManager.showMessage(INTERNAL_ERROR);
-      // TODO logger
+      this.logger.logError(err as any);
     }
 
   }
@@ -124,7 +127,7 @@ export class AppFacadeImpl implements AppFacade {
       await this.setupAndStartTracking();
     } catch (err) {
       this.uiManager.showMessage(INTERNAL_ERROR);
-      // TODO logger
+      this.logger.logError(err as any);
     }
   }
 
@@ -158,7 +161,7 @@ export class AppFacadeImpl implements AppFacade {
   }
 
   private async checkApiKey(apiKey: string | null | undefined): Promise<boolean> {
-    return apiKey !== null && apiKey !== undefined && await this.apiClient.validateApiKey(apiKey)
+    return apiKey !== null && apiKey !== undefined && await this.apiClient.validateApiKey(apiKey);
   }
 
   private async setupComponents(): Promise<void> {
